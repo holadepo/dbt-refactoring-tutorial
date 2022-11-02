@@ -10,19 +10,19 @@ with
             C.FIRST_NAME    as customer_first_name,
             C.LAST_NAME as customer_last_name
         from
-            dbt-tutorial.jaffle_shop.orders as Orders
+            {{ source('jaffle_shop', 'orders') }} as Orders
         left join (
             select 
                 ORDERID as order_id, 
                 max(CREATED) as payment_finalized_date, 
                 sum(AMOUNT) / 100.0 as total_amount_paid
             from 
-                dbt-tutorial.stripe.payment
+                {{ source('stripe', 'payment') }}
             where 
                 STATUS <> 'fail'
             group by 1
         ) p on orders.ID = p.order_id
-        left join dbt-tutorial.jaffle_shop.customers C on orders.USER_ID = C.ID 
+        left join {{ source('jaffle_shop', 'customers') }} C on orders.USER_ID = C.ID 
     ),
 
     customer_orders as (
@@ -32,8 +32,8 @@ with
             max(ORDER_DATE) as most_recent_order_date,
             count(ORDERS.ID) as number_of_orders
         from 
-            dbt-tutorial.jaffle_shop.customers C 
-        left join dbt-tutorial.jaffle_shop.orders as Orders on orders.USER_ID = C.ID 
+            {{ source('jaffle_shop', 'customers') }} C 
+        left join {{ source('jaffle_shop', 'orders') }} as Orders on orders.USER_ID = C.ID 
         group by 1
     )
 
