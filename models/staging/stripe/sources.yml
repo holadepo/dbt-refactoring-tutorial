@@ -1,0 +1,13 @@
+sources:
+  - name: stripe
+    database: dbt-tutorial
+    tables:
+      - name: payment
+        columns:
+          - name: id
+          - name: orderid
+          - name: paymentmethod
+          - name: status
+          - name: amount
+          - name: created
+          - name: _batched_at
